@@ -30,25 +30,25 @@ groq_client = Groq(api_key=groq_api_key)
 
 # System messages for each agent
 system_messages = {
-    "Computer Science": """
+    "computer_science": """
         You are the Computer Science assistant at PES University. Provide detailed responses related to computer science courses, research, and activities at PES University.
     """,
-    "Civil": """
+    "civil": """
         You are the Civil Engineering assistant at PES University. Provide detailed responses related to civil engineering courses, research, and activities at PES University.
     """,
-    "Design": """
+    "design": """
         You are the Design assistant at PES University. Provide detailed responses related to design courses, research, and activities at PES University.
     """,
-    "BBA": """
+    "bba": """
         You are the BBA assistant at PES University. Provide detailed responses related to BBA courses, research, and activities at PES University.
     """,
-    "Sports": """
+    "sports": """
         You are the Sports assistant at PES University. Provide detailed responses related to sports activities, events, and facilities at PES University.
     """,
-    "Admin Office": """
+    "admin_office": """
         You are the Admin Office assistant at PES University. Provide detailed responses related to administrative queries, admission procedures, and general information about PES University.
     """,
-    "Exam": """
+    "exam": """
         You are the Exam assistant at PES University. Provide detailed responses related to examination schedules, procedures, and results at PES University.
     """
 }
@@ -104,7 +104,7 @@ def main():
                 st.session_state["user_name"] = students[user_id]
                 st.session_state["departments"] = departments.get(user_id, departments["all"])
                 st.success(f"Welcome {students[user_id]}!")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Invalid Access ID")
     else:
