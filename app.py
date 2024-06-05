@@ -91,8 +91,6 @@ def display_chat_history(agent_key):
 
 # Main app
 def main():
-    st.set_page_config(page_title="PES University Agent Portal", layout="wide")
-    
     # Check if user is logged in
     if "user_id" not in st.session_state:
         # Login page
@@ -137,4 +135,3 @@ def main():
 # Run the main app
 if __name__ == "__main__":
     main()
-
