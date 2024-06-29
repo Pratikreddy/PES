@@ -16,9 +16,9 @@ students = {
 # Assign departments
 departments = {
     "0001": ["Computer Science", "Civil", "Design", "BBA", "Sports", "Admin Office", "Exam"],
-    "0002": ["Computer Science"],
-    "0003": ["Civil"],
-    "0004": ["Design"],
+    "0002": ["BBA","Sports", "Admin Office", "Exam"],
+    "0003": ["Civil","Sports", "Admin Office", "Exam"],
+    "0004": ["Design","Sports", "Admin Office", "Exam"],
     "all": ["Sports", "Admin Office", "Exam"]
 }
 
