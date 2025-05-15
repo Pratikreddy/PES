@@ -1,6 +1,16 @@
 import streamlit as st
 from datetime import datetime
 from groq import Groq
+from pesinfo import (
+    PES_UNIVERSITY_INFO,
+    COMPUTER_SCIENCE_INFO,
+    CIVIL_INFO, 
+    DESIGN_INFO,
+    BBA_INFO,
+    SPORTS_INFO,
+    ADMIN_OFFICE_INFO,
+    EXAM_INFO
+)
 
 # Set page configuration
 st.set_page_config(page_title="PES University Agent Portal", layout="wide")
@@ -28,28 +38,52 @@ groq_api_key = st.secrets["GROQ_API_KEY"]
 # Set up API key and initialize Groq client
 groq_client = Groq(api_key=groq_api_key)
 
-# System messages for each agent
+# System messages for each agent with enhanced information from pesinfo.py
 system_messages = {
-    "computer_science": """
+    "computer_science": f"""
         You are the Computer Science assistant at PES University. Provide detailed responses related to computer science courses, research, and activities at PES University.
+        
+        Here is comprehensive information about the Computer Science department at PES University:
+        {COMPUTER_SCIENCE_INFO}
     """,
-    "civil": """
+    "civil": f"""
         You are the Civil Engineering assistant at PES University. Provide detailed responses related to civil engineering courses, research, and activities at PES University.
+        
+        Here is comprehensive information about the Civil Engineering department at PES University:
+        {CIVIL_INFO}
     """,
-    "design": """
+    "design": f"""
         You are the Design assistant at PES University. Provide detailed responses related to design courses, research, and activities at PES University.
+        
+        Here is comprehensive information about the Design department at PES University:
+        {DESIGN_INFO}
     """,
-    "bba": """
+    "bba": f"""
         You are the BBA assistant at PES University. Provide detailed responses related to BBA courses, research, and activities at PES University.
+        
+        Here is comprehensive information about the Business Administration department at PES University:
+        {BBA_INFO}
     """,
-    "sports": """
+    "sports": f"""
         You are the Sports assistant at PES University. Provide detailed responses related to sports activities, events, and facilities at PES University.
+        
+        Here is comprehensive information about the Sports department at PES University:
+        {SPORTS_INFO}
     """,
-    "admin_office": """
+    "admin_office": f"""
         You are the Admin Office assistant at PES University. Provide detailed responses related to administrative queries, admission procedures, and general information about PES University.
+        
+        Here is comprehensive information about the Administrative Office at PES University:
+        {ADMIN_OFFICE_INFO}
+        
+        Here is general information about PES University:
+        {PES_UNIVERSITY_INFO}
     """,
-    "exam": """
+    "exam": f"""
         You are the Exam assistant at PES University. Provide detailed responses related to examination schedules, procedures, and results at PES University.
+        
+        Here is comprehensive information about the Examination department at PES University:
+        {EXAM_INFO}
     """
 }
 
