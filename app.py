@@ -87,30 +87,49 @@ system_messages = {
     """
 }
 
-# Initialize chat history in session state
-def init_chat_history(agent_key):
+# Initialize agent state in session state (chat history and input buffer)
+def init_agent_state(agent_key):
     if f"chat_history_{agent_key}" not in st.session_state:
         st.session_state[f"chat_history_{agent_key}"] = []
+    if f"input_buffer_{agent_key}" not in st.session_state:
+        st.session_state[f"input_buffer_{agent_key}"] = ""
 
 # Function to handle sending a message
 def send_message(agent_key):
-    if st.session_state[f"input_buffer_{agent_key}"]:
+    # Check if the input buffer exists and is not empty
+    if f"input_buffer_{agent_key}" in st.session_state and st.session_state[f"input_buffer_{agent_key}"]:
         message = st.session_state[f"input_buffer_{agent_key}"]
         
         # Append user input to chat history
-        st.session_state[f"chat_history_{agent_key}"].append({"role": "user", "content": message, "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+        st.session_state[f"chat_history_{agent_key}"].append({
+            "role": "user",
+            "content": message,
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        })
+
+        # Prepare messages for the model
+        chat_msgs = [
+            {"role": "system", "content": system_messages[agent_key]}
+        ] + [
+            {"role": chat["role"], "content": chat["content"]}
+            for chat in st.session_state[f"chat_history_{agent_key}"]
+        ]
 
         # Call Groq API with the entire chat history
         response = groq_client.chat.completions.create(
             model="llama3-70b-8192",
-            messages=[{"role": "system", "content": system_messages[agent_key]}] + [{"role": chat["role"], "content": chat["content"]} for chat in st.session_state[f"chat_history_{agent_key}"]],
+            messages=chat_msgs,
             temperature=0.3,
             max_tokens=2000
         )
         chatbot_response = response.choices[0].message.content.strip()
 
         # Append chatbot response to chat history
-        st.session_state[f"chat_history_{agent_key}"].append({"role": "assistant", "content": chatbot_response, "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+        st.session_state[f"chat_history_{agent_key}"].append({
+            "role": "assistant",
+            "content": chatbot_response,
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        })
 
         # Clear the input buffer
         st.session_state[f"input_buffer_{agent_key}"] = ""
@@ -119,9 +138,15 @@ def send_message(agent_key):
 def display_chat_history(agent_key):
     for message in st.session_state[f"chat_history_{agent_key}"]:
         if message["role"] == "user":
-            st.markdown(f"<div style='border: 2px solid red; padding: 10px; margin: 10px 0; border-radius: 8px; width: 80%; float: right; clear: both;'>{message['content']}</div>", unsafe_allow_html=True)
+            st.markdown(
+                f"<div style='border: 2px solid red; padding: 10px; margin: 10px 0; border-radius: 8px; width: 80%; float: right; clear: both;'>{message['content']}</div>",
+                unsafe_allow_html=True
+            )
         elif message["role"] == "assistant":
-            st.markdown(f"<div style='border: 2px solid green; padding: 10px; margin: 10px 0; border-radius: 8px; width: 80%; float: left; clear: both;'>{message['content']}</div>", unsafe_allow_html=True)
+            st.markdown(
+                f"<div style='border: 2px solid green; padding: 10px; margin: 10px 0; border-radius: 8px; width: 80%; float: left; clear: both;'>{message['content']}</div>",
+                unsafe_allow_html=True
+            )
 
 # Main app
 def main():
@@ -151,9 +176,9 @@ def main():
         agents = st.session_state["departments"]
         agent = st.sidebar.selectbox("Select Agent", agents)
         
-        # Initialize chat history for the selected agent
+        # Initialize agent state for the selected agent
         agent_key = agent.lower().replace(" ", "_")
-        init_chat_history(agent_key)
+        init_agent_state(agent_key)
         
         # Agent-specific UI
         st.header(f"{agent} Agent")
@@ -163,8 +188,12 @@ def main():
         display_chat_history(agent_key)
         
         # User input and send button
-        user_input = st.text_input("Type your message here:", key=f"input_buffer_{agent_key}")
-        st.button("Send", on_click=lambda: send_message(agent_key))
+        st.text_input(
+            "Type your message here:",
+            key=f"input_buffer_{agent_key}",
+            on_change=send_message,
+            args=(agent_key,)
+        )
 
 # Run the main app
 if __name__ == "__main__":
